@@ -1,6 +1,7 @@
 .mainWrapper {
   width: 100%;
-  overflow-x: clip; /* hidden yerine clip kullanarak scroll davranışını koruyoruz */
+  overflow-x: clip;
+  /* hidden yerine clip kullanarak scroll davranışını koruyoruz */
 }
 
 .page {
@@ -18,8 +19,9 @@
     transform: scale(calc(100vw / 1440));
     transform-origin: top center;
     /* Önemli: Yüksekliğin scale ile orantılı daralması için */
-    height: auto; 
-    margin-bottom: calc((100vw / 1440 - 1) * 100vh); /* Opsiyonel: Alt boşluğu dengelemek için */
+    height: auto;
+    margin-bottom: calc((100vw / 1440 - 1) * 100vh);
+    /* Opsiyonel: Alt boşluğu dengelemek için */
   }
 }
 
@@ -35,14 +37,8 @@
   margin-right: auto;
 }
 
-.galleryContainer {
-  /* İstediğin o 539px boşluk ayarını buraya margin-top olarak verebilirsin */
-  margin-top: 539px; 
-  width: 100%;
-  position: relative;
-}
-
 .galleryWrapper {
+  margin-top: 78px;
   width: 100%;
   position: relative;
 }

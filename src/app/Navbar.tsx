@@ -2,6 +2,7 @@
 
 import { useScroll, useTransform, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getCalApi } from "@calcom/embed-react";
 import styles from "./Navbar.module.css";
 
@@ -12,7 +13,7 @@ interface NavbarProps {
 
 const ANIMATION_CONFIG = {
   logo: {
-    startProgress: 0.8,  // 2 scroll gecikmeli
+    startProgress: 0.2,  // 2 scroll gecikmeli
     endProgress: 1,
     startScale: 1,
     endScale: 1.33,
@@ -28,6 +29,7 @@ const ANIMATION_CONFIG = {
 const NAVBAR_PADDING_X = 24;
 
 export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
+  const router = useRouter();
   const { scrollYProgress } = useScroll();
   const rotate = useTransform(scrollYProgress, [0, 1], [0, 720]);
 
@@ -95,15 +97,8 @@ export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
     v > 0.02 ? "auto" : "none"
   );
 
-  const handleScheduleClick = async () => {
-    const cal = await getCalApi({ namespace: "30min" });
-    cal("modal", {
-      calLink: "aftermind/30min",
-      config: {
-        layout: "month_view",
-        theme: "dark",
-      },
-    });
+  const handleScheduleClick = () => {
+    router.push("/cal");
   };
 
   const handleLogoClick = () => {

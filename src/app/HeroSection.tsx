@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
 import styles from "./HeroSection.module.css";
 import IconTeam from "../../Icons/IconTeam.svg";
 import IconExposure2 from "../../Icons/IconExposure2.svg";
@@ -23,6 +23,9 @@ interface HeroSectionProps {
 export default function HeroSection({ heroRef }: HeroSectionProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [hoverOffset, setHoverOffset] = useState(0);
+  const [activeServiceIndex, setActiveServiceIndex] = useState(-1);
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
+  const serviceRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   const pmRef = useRef<any>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -111,10 +114,49 @@ export default function HeroSection({ heroRef }: HeroSectionProps) {
     };
   }, []);
 
+  // Auto-loop effect
+  useEffect(() => {
+    if (isUserInteracting) return;
+
+    const interval = setInterval(() => {
+      setActiveServiceIndex((prev) => (prev + 1) % SERVICES.length);
+    }, 3000); // Updated to 3s
+
+    return () => clearInterval(interval);
+  }, [isUserInteracting, SERVICES.length]); // Re-run when services or interaction state changes
+
+  // Handle active service change (either auto or manual)
+  useEffect(() => {
+    // If user is manually hovering, handleHover handles the morph.
+    // Index -1 means idle (initial state)
+    if (isUserInteracting || activeServiceIndex < 0) return;
+
+    const service = SERVICES[activeServiceIndex];
+    const el = serviceRefs.current[activeServiceIndex];
+
+    if (el && pmRef.current) {
+      setHoverOffset(el.offsetTop);
+      setIsHovered(true);
+      pmRef.current.morphToModel(service.model);
+    }
+  }, [activeServiceIndex, isUserInteracting]);
+
+  // Initial fix: Ensure the icon container is visible at the correct height on mount
+  useLayoutEffect(() => {
+    const el = serviceRefs.current[0];
+    if (el) {
+      setHoverOffset(el.offsetTop);
+      setIsHovered(true); // Shows the default sphere immediately
+    }
+  }, []);
+
   const handleHover = (
     e: React.MouseEvent<HTMLSpanElement>,
-    modelId: string
+    modelId: string,
+    index: number
   ) => {
+    setIsUserInteracting(true);
+    setActiveServiceIndex(index);
     setHoverOffset(e.currentTarget.offsetTop);
     setIsHovered(true);
 
@@ -128,6 +170,7 @@ export default function HeroSection({ heroRef }: HeroSectionProps) {
   };
 
   const handleMouseLeave = () => {
+    setIsUserInteracting(false);
     setIsHovered(false);
 
     if (pmRef.current) {
@@ -178,20 +221,25 @@ export default function HeroSection({ heroRef }: HeroSectionProps) {
         <div className={styles.heroChild2_2} onMouseLeave={handleMouseLeave}>
           <div
             ref={canvasContainerRef}
-            className={`${styles.morphCanvas} ${
-              isHovered ? styles.morphCanvasVisible : ""
-            }`}
+            className={`${styles.morphCanvas} ${isHovered ? styles.morphCanvasVisible : ""
+              }`}
             style={{ transform: `translateY(${hoverOffset}px)` }}
           />
 
           <span className={styles.andWeDoText}>And, we do</span>
 
           <div className={styles.servicesContainer}>
-            {SERVICES.map((service) => (
+            {SERVICES.map((service, index) => (
               <span
                 key={service.id}
-                className={styles.serviceText}
-                onMouseEnter={(e) => handleHover(e, service.model)}
+                ref={(el) => {
+                  serviceRefs.current[index] = el;
+                }}
+                className={`${styles.serviceText} ${activeServiceIndex === index && !isUserInteracting
+                  ? styles.serviceTextActive
+                  : ""
+                  }`}
+                onMouseEnter={(e) => handleHover(e, service.model, index)}
               >
                 {service.label}
               </span>

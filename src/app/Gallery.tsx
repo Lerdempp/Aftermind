@@ -1,12 +1,10 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "motion/react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useEffect, useRef, useState } from "react";
 import styles from "./Gallery.module.css";
 import Card1 from "../../Images/Card1.svg";
 import Card2 from "../../Images/Card2.svg";
-
-const DELAY_PX = 300;
 
 export default function Gallery() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,17 +27,78 @@ export default function Gallery() {
     return () => window.removeEventListener("resize", measure);
   }, []);
 
+  useEffect(() => {
+    let wheelTimeout: NodeJS.Timeout;
+    let isLocked = false;
+    let isWheeling = false;
+
+    // "Pin" the scroll at the top of the gallery to kill any fast scrolling momentum
+    const handleWheel = (e: WheelEvent) => {
+      if (!containerRef.current) return;
+      
+      const offsetTop = containerRef.current.offsetTop;
+      const currentScrollY = window.scrollY;
+      
+      isWheeling = true;
+      clearTimeout(wheelTimeout);
+
+      // Lock is released after 150ms of no wheel events
+      wheelTimeout = setTimeout(() => {
+        isWheeling = false;
+        isLocked = false;
+      }, 150);
+
+      if (isLocked) {
+        if (e.deltaY < 0) {
+          isLocked = false; // Allow scrolling back up
+        } else {
+          e.preventDefault(); // Kill the momentum down
+        }
+      }
+    };
+
+    const handleScroll = () => {
+      if (!containerRef.current) return;
+      
+      const offsetTop = containerRef.current.offsetTop;
+      const currentScrollY = window.scrollY;
+
+      // If we crossed the gallery threshold while wheeling and were not locked, lock it.
+      // This kills the momentum from a fast swipe at the exact threshold.
+      if (isWheeling && !isLocked && currentScrollY >= offsetTop && currentScrollY < offsetTop + 100) {
+        isLocked = true;
+        window.scrollTo(0, offsetTop); 
+      }
+      
+      if (isLocked) {
+        window.scrollTo(0, offsetTop);
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(wheelTimeout);
+    };
+  }, []);
+
+  // Use framer motion for horizontal scroll hijacking
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
+  const DELAY_PX = 300; // Small delay before horizontal track starts moving
   const sectionHeight =
     totalDistance > 0
       ? totalDistance + viewportHeight + DELAY_PX
       : viewportHeight || 800;
 
   const startFraction = sectionHeight > 0 ? DELAY_PX / sectionHeight : 0;
+  
   const x = useTransform(
     scrollYProgress,
     [0, startFraction, 1],

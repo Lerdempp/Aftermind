@@ -4,15 +4,13 @@
   left: 0;
   right: 0;
   z-index: 100;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   padding: 10px 24px;
   box-sizing: border-box;
   margin: 0;
-  background: red;
+  background-color: white;
 }
 
 .logoIcon {

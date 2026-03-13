@@ -1,0 +1,94 @@
+.calPageWrapper {
+  min-height: 100vh;
+  background-color: #ffffff;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  font-family: var(--font-inter-display), sans-serif;
+}
+
+.headerWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1040px; /* Matches calendar width */
+  margin-top: 40px;
+  margin-bottom: 48px;
+  position: relative;
+}
+
+.backButton {
+  position: absolute;
+  top: 4px; /* Aligns with first line of text */
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.backButton:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+}
+
+.titleAccent {
+  color: #00194B;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-align: center;
+}
+
+.titleBlack {
+  font-size: 40px;
+  font-weight: 700;
+  color: #0d0d0d;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-align: center;
+}
+
+.calendarContainer {
+  width: 100%;
+  max-width: 1040px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  /* Box shadow removed as per screenshot which looks very flat/clean, 
+     but Cal embed has its own border inside. 
+  */
+}
+
+@media (max-width: 768px) {
+  .backButton {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-bottom: 24px;
+    align-self: flex-start;
+  }
+  
+  .titleOrange, .titleBlack {
+    font-size: 28px;
+  }
+  
+  .header {
+    margin-top: 0;
+  }
+}

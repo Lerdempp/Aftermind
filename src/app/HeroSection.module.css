@@ -125,7 +125,8 @@
   transition: width 0.3s ease;
 }
 
-.serviceText:hover::after {
+.serviceText:hover::after,
+.serviceTextActive::after {
   width: 100%;
 }
 
@@ -146,7 +147,8 @@
   border: 1px solid rgba(0, 0, 0, 0.25);
   background: transparent;
   position: absolute;
-  left: -48px; /* And, we do satırının 24px solunda */
+  left: -72px;
+  /* And, we do satırının 48px solunda */
   top: 0;
   opacity: 0;
   pointer-events: none;
@@ -170,8 +172,8 @@
   width: 150px;
   height: 150px;
   position: absolute;
-  left: -130px;
-  top: -65px;
+  left: -178px;
+  top: -97px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.4s ease, transform 0.3s ease;
