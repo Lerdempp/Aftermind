@@ -6,6 +6,8 @@ import styles from "./Gallery.module.css";
 import Card1 from "../../Images/Card1.svg";
 import Card2 from "../../Images/Card2.svg";
 
+const DELAY_PX = 300;
+
 export default function Gallery() {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -32,10 +34,17 @@ export default function Gallery() {
     offset: ["start start", "end end"],
   });
 
-  const x = useTransform(scrollYProgress, [0, 1], [0, -totalDistance]);
-
   const sectionHeight =
-    totalDistance > 0 ? totalDistance + viewportHeight : viewportHeight || 800;
+    totalDistance > 0
+      ? totalDistance + viewportHeight + DELAY_PX
+      : viewportHeight || 800;
+
+  const startFraction = sectionHeight > 0 ? DELAY_PX / sectionHeight : 0;
+  const x = useTransform(
+    scrollYProgress,
+    [0, startFraction, 1],
+    [0, 0, -totalDistance],
+  );
 
   return (
     <div
