@@ -2,6 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import { useScroll } from "motion/react";
+import { motion } from "motion/react";
 import styles from "./page.module.css";
 import LedStrip from "./LedStrip";
 import HeroSection from "./HeroSection";
@@ -40,19 +41,25 @@ export default function HomePage() {
 
   return (
     <div className={styles.mainWrapper}>
-      <Navbar galleryProgress={galleryProgress} heroRef={heroRef} />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <Navbar galleryProgress={galleryProgress} heroRef={heroRef} />
 
-      <div className={styles.page}>
-        <div className={styles.container}>
-          <HeroSection heroRef={heroRef} />
-          <LedStrip />
-          <PricingSection />
+        <div className={styles.page}>
+          <div className={styles.container}>
+            <HeroSection heroRef={heroRef} />
+            <LedStrip />
+            <PricingSection />
+          </div>
         </div>
-      </div>
 
-      <div ref={galleryRef} className={styles.galleryWrapper}>
-        <Gallery />
-      </div>
+        <div ref={galleryRef} className={styles.galleryWrapper}>
+          <Gallery />
+        </div>
+      </motion.div>
     </div>
   );
 }

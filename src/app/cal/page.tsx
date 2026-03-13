@@ -3,6 +3,7 @@
 import Cal, { getCalApi } from "@calcom/embed-react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
 import styles from "./page.module.css";
 
 export default function CalPage() {
@@ -21,7 +22,12 @@ export default function CalPage() {
   }, []);
 
   return (
-    <div className={styles.calPageWrapper}>
+    <motion.div 
+      className={styles.calPageWrapper}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
       <div className={styles.headerWrapper}>
         <button 
           onClick={() => router.push("/")}
@@ -44,6 +50,6 @@ export default function CalPage() {
           config={{ layout: "month_view", theme: "light" }}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }
