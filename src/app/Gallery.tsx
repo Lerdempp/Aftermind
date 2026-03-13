@@ -1,123 +1,54 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { motion, useMotionValue, useSpring } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
+import { useLayoutEffect, useRef, useState } from "react";
 import styles from "./Gallery.module.css";
 import Card1 from "../../Images/Card1.svg";
 import Card2 from "../../Images/Card2.svg";
 
-export default function Gallery() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+const DELAY_PX = 300;
 
-  const [maxHorizontalScroll, setMaxHorizontalScroll] = useState(0);
+export default function Gallery() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [totalDistance, setTotalDistance] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
 
-  const rawX = useMotionValue(0);
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!trackRef.current) return;
+      const trackWidth = trackRef.current.scrollWidth;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      setTotalDistance(Math.max(trackWidth - vw, 0));
+      setViewportHeight(vh);
+    };
 
-  const x = useSpring(rawX, {
-    stiffness: 140,
-    damping: 26,
-    mass: 0.4,
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
   });
 
-  useLayoutEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const updateMetrics = () => {
-      if (!trackRef.current) return;
-
-      const totalWidth = trackRef.current.scrollWidth;
-      const viewportWidth = window.innerWidth;
-      const horizontalDistance = Math.max(totalWidth - viewportWidth, 0);
-
-      setMaxHorizontalScroll(horizontalDistance);
-      setViewportHeight(window.innerHeight);
-
-      const currentX = rawX.get();
-      const clampedX = Math.max(-horizontalDistance, Math.min(0, currentX));
-      rawX.set(clampedX);
-    };
-
-    updateMetrics();
-    window.addEventListener("resize", updateMetrics);
-
-    return () => {
-      window.removeEventListener("resize", updateMetrics);
-    };
-  }, [rawX]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const isGalleryActive = () => {
-      const rect = section.getBoundingClientRect();
-      return rect.top <= 0 && rect.bottom > window.innerHeight;
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (maxHorizontalScroll <= 0) return;
-      if (!isGalleryActive()) return;
-
-      const currentX = rawX.get();
-      const delta = e.deltaY;
-
-      const atStart = currentX >= 0;
-      const atEnd = currentX <= -maxHorizontalScroll;
-
-      const scrollingDown = delta > 0;
-      const scrollingUp = delta < 0;
-
-      // Aşağı inerken yatayda sona gelmediysek scroll'u kilitle ve yataya çevir
-      if (scrollingDown && !atEnd) {
-        e.preventDefault();
-
-        const nextX = currentX - delta;
-        const clampedX = Math.max(-maxHorizontalScroll, Math.min(0, nextX));
-        rawX.set(clampedX);
-        return;
-      }
-
-      // Yukarı çıkarken yatayda başa gelmediysek scroll'u kilitle ve geri yataya çevir
-      if (scrollingUp && !atStart) {
-        e.preventDefault();
-
-        const nextX = currentX - delta;
-        const clampedX = Math.max(-maxHorizontalScroll, Math.min(0, nextX));
-        rawX.set(clampedX);
-        return;
-      }
-
-      // scrollingDown && atEnd ise aşağı devam etmesine izin verme:
-      // çünkü burası sayfanın sonu gibi davranacak
-      if (scrollingDown && atEnd) {
-        e.preventDefault();
-        return;
-      }
-
-      // scrollingUp && atStart ise normal yukarı çıkışa izin ver
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-    };
-  }, [maxHorizontalScroll, rawX]);
-
-  // Sayfanın son section'ı gibi davranması için:
-  // sticky alan (1 viewport) + yatay gidilecek mesafe kadar yükseklik yeterli
   const sectionHeight =
-    maxHorizontalScroll > 0
-      ? maxHorizontalScroll + viewportHeight
-      : viewportHeight;
+    totalDistance > 0
+      ? totalDistance + viewportHeight + DELAY_PX
+      : viewportHeight || 800;
+
+  const startFraction = sectionHeight > 0 ? DELAY_PX / sectionHeight : 0;
+  const x = useTransform(
+    scrollYProgress,
+    [0, startFraction, 1],
+    [0, 0, -totalDistance],
+  );
 
   return (
-    <section
-      ref={sectionRef}
+    <div
+      ref={containerRef}
       className={styles.gallerySection}
       style={{ height: `${sectionHeight}px` }}
     >
@@ -156,6 +87,6 @@ export default function Gallery() {
           </div>
         </motion.div>
       </div>
-    </section>
+    </div>
   );
 }
