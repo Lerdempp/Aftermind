@@ -57,30 +57,10 @@ export default function Gallery() {
       }
     };
 
-    const handleScroll = () => {
-      if (!containerRef.current) return;
-      
-      const offsetTop = containerRef.current.offsetTop;
-      const currentScrollY = window.scrollY;
-
-      // If we crossed the gallery threshold while wheeling and were not locked, lock it.
-      // This kills the momentum from a fast swipe at the exact threshold.
-      if (isWheeling && !isLocked && currentScrollY >= offsetTop && currentScrollY < offsetTop + 100) {
-        isLocked = true;
-        window.scrollTo(0, offsetTop); 
-      }
-      
-      if (isLocked) {
-        window.scrollTo(0, offsetTop);
-      }
-    };
-
     window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("scroll", handleScroll);
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("scroll", handleScroll);
       clearTimeout(wheelTimeout);
     };
   }, []);

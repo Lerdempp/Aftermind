@@ -1,6 +1,6 @@
 "use client";
 
-import { useScroll, useTransform, motion } from "motion/react";
+import { useScroll, useTransform, motion, useSpring } from "motion/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCalApi } from "@calcom/embed-react";
@@ -13,7 +13,7 @@ interface NavbarProps {
 
 const ANIMATION_CONFIG = {
   logo: {
-    startProgress: 0.2,  // 2 scroll gecikmeli
+    startProgress: 0.65,  // 2 scroll gecikmeli
     endProgress: 1,
     startScale: 1,
     endScale: 1.33,
@@ -52,7 +52,7 @@ export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
       const heroLeft =
         heroRef.current?.getBoundingClientRect().left ?? NAVBAR_PADDING_X;
 
-      const startX = heroLeft - NAVBAR_PADDING_X;
+      const startX = heroLeft - NAVBAR_PADDING_X + 24;
       const endLeft =
         window.innerWidth * ANIMATION_CONFIG.logo.endViewportPercent;
       const endX = endLeft - NAVBAR_PADDING_X;
@@ -97,6 +97,12 @@ export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
     v > 0.02 ? "auto" : "none"
   );
 
+  const backgroundColor = useTransform(
+    galleryProgress,
+    [0.95, 1],
+    ["white", "rgba(255, 0, 0, 0)"]
+  );
+
   const handleScheduleClick = () => {
     router.push("/cal");
   };
@@ -106,7 +112,11 @@ export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
   };
 
   return (
-    <motion.div className={styles.navbar} suppressHydrationWarning>
+    <motion.div
+      className={styles.navbar}
+      style={{ backgroundColor }}
+      suppressHydrationWarning
+    >
       <motion.div
         className={styles.logoIcon}
         onClick={handleLogoClick}

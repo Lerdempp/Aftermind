@@ -17,14 +17,15 @@ export default function HomePage() {
 
   const { scrollYProgress: galleryProgress } = useScroll({
     target: galleryRef,
-    offset: ["start 500px", "start 0px"],
+    offset: ["start 1500px", "start 0px"],
   });
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      lerp: 0.15, 
     });
 
     function raf(time: number) {
