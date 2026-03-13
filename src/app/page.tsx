@@ -28,6 +28,8 @@ export default function HomePage() {
       lerp: 0.15, 
     });
 
+    (window as any).__LENIS_INSTANCE__ = lenis;
+
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -37,6 +39,7 @@ export default function HomePage() {
 
     return () => {
       lenis.destroy();
+      (window as any).__LENIS_INSTANCE__ = null;
     };
   }, []);
 

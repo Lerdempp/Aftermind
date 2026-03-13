@@ -107,8 +107,14 @@ export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
     router.push("/cal");
   };
 
-  const handleLogoClick = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const lenis = (window as any).__LENIS_INSTANCE__;
+    if (lenis) {
+      lenis.scrollTo(0);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   return (
