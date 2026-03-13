@@ -1,0 +1,122 @@
+[
+  {
+    "id": "pumping_heart",
+    "label": "Heart",
+    "file": "pumping_heart_model.glb",
+    "format": "glb"
+  },
+  {
+    "id": "human_head",
+    "label": "human_head",
+    "file": "human_head.glb",
+    "format": "glb"
+  },
+  {
+    "id": "male_portrait",
+    "label": "male_portrait",
+    "file": "male_portrait.glb",
+    "format": "glb"
+  },
+  {
+    "id": "donald_duck",
+    "label": "donald_duck",
+    "file": "donald_duck.glb",
+    "format": "glb"
+  },
+  {
+    "id": "daft_punk_thomas_helmet_re_uploaded",
+    "label": "daft_punk_thomas_helmet_re-uploaded",
+    "file": "daft_punk_thomas_helmet_re-uploaded.glb",
+    "format": "glb"
+  },
+  {
+    "id": "torii",
+    "label": "torii",
+    "file": "torii.glb",
+    "format": "glb"
+  },
+  {
+    "id": "lightning",
+    "label": "lightning",
+    "file": "lightning.glb",
+    "format": "glb"
+  },
+  {
+    "id": "giant_low_poly_tree",
+    "label": "giant_low_poly_tree",
+    "file": "giant_low_poly_tree.glb",
+    "format": "glb"
+  },
+  {
+    "id": "mushroom_tree",
+    "label": "mushroom_tree",
+    "file": "mushroom_tree.glb",
+    "format": "glb"
+  },
+  {
+    "id": "free_smenaflex_8m",
+    "label": "free_smenaflex_8m",
+    "file": "free_smenaflex_8m.glb",
+    "format": "glb"
+  },
+  {
+    "id": "cloud_high_poly",
+    "label": "cloud_high_poly",
+    "file": "cloud_high_poly.glb",
+    "format": "glb"
+  },
+  {
+    "id": "sphere",
+    "label": "Sphere",
+    "file": "sphere.glb",
+    "format": "glb"
+  },
+  {
+    "id": "cube",
+    "label": "Cube",
+    "file": "cube.glb",
+    "format": "glb"
+  },
+  {
+    "id": "cone",
+    "label": "Cone",
+    "file": "cone.glb",
+    "format": "glb"
+  },
+  {
+    "id": "pyramid",
+    "label": "Pyramid",
+    "file": "pyramid.glb",
+    "format": "glb"
+  },
+  {
+    "id": "cylinder",
+    "label": "Cylinder",
+    "file": "cylinder.glb",
+    "format": "glb"
+  },
+  {
+    "id": "tree",
+    "label": "Tree",
+    "file": "Tree.glb",
+    "format": "glb"
+  },
+  {
+    "id": "scene",
+    "label": "scene",
+    "file": "scene.gltf",
+    "format": "gltf"
+  },
+  {
+    "id": "cute_little_star",
+    "label": "cute-little-star",
+    "file": "cute-little-star.gltf",
+    "format": "gltf"
+  },
+  {
+    "id": "abstract",
+    "label": "abstract",
+    "file": "abstract.gltf",
+    "format": "gltf"
+  }
+]

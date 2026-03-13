@@ -1,0 +1,30 @@
+.ledStripWrapper {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+  width: 100%;
+  align-items: center;
+}
+
+.ledStrip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  height: 2px;
+  background: transparent;
+  overflow: hidden;
+}
+
+.ledStrip:first-child {
+  margin-bottom: 0px;
+}
+
+.ellipse {
+  width: 2px;
+  height: 2px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

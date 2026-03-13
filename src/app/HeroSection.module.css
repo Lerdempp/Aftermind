@@ -1,0 +1,192 @@
+.heroSection {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.heroChild1 {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: stretch;
+}
+
+.heroChild2 {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.title {
+  color: #0d0d0d;
+  font-family: var(--font-inter-display), sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.32px;
+}
+
+.heroChild2_1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.subtitle {
+  color: rgba(13, 13, 13, 0.5);
+  font-family: var(--font-inter-variable), sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.07px;
+}
+
+.heroChild2_1_2 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.iconItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.iconText {
+  color: rgba(13, 13, 13, 0.8);
+  font-family: var(--font-inter-variable), sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.07px;
+}
+
+.andWeDoText {
+  color: rgba(13, 13, 13, 0.5);
+  font-family: var(--font-inter-variable), sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.07px;
+  margin-right: 8px;
+}
+
+.heroChild2_2 {
+  display: flex;
+  align-items: center;
+  position: relative;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.servicesContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.serviceText {
+  color: rgba(13, 13, 13, 0.8);
+  text-align: center;
+  font-family: var(--font-inter-variable), sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.07px;
+  text-decoration: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.serviceText::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background-color: rgba(13, 13, 13, 0.8);
+  transition: width 0.3s ease;
+}
+
+.serviceText:hover::after {
+  width: 100%;
+}
+
+/* tek tek position vermemize gerek yok ama sorun da olmaz */
+.service1,
+.service2,
+.service3,
+.service4,
+.service5,
+.service6 {
+  position: relative;
+}
+
+/* Kare + ikon  — transparan bg, belirgin border */
+.hoverBox {
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  background: transparent;
+  position: absolute;
+  left: -48px; /* And, we do satırının 24px solunda */
+  top: 0;
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.hoverBoxVisible {
+  opacity: 1;
+}
+
+.hoverIcon {
+  width: 14px;
+  height: 14px;
+}
+
+/* PointMorph Canvas */
+.morphCanvas {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  left: -130px;
+  top: -65px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.3s ease;
+  border-radius: 12px;
+  overflow: visible;
+  z-index: 10;
+}
+
+.morphCanvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  background: transparent !important;
+}
+
+.morphCanvasVisible {
+  opacity: 1 !important;
+}

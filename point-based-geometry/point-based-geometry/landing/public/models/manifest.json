@@ -1,0 +1,14 @@
+[
+  {
+    "id": "design",
+    "label": "Cloud",
+    "file": "cloud_high_poly.glb",
+    "format": "glb"
+  },
+  {
+    "id": "development",
+    "label": "Daft Punk Helmet",
+    "file": "daft_punk_thomas_helmet_re-uploaded.glb",
+    "format": "glb"
+  }
+]

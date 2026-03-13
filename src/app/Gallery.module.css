@@ -1,0 +1,108 @@
+.gallerySection {
+  position: relative;
+  height: 300vh;
+  margin-top: 0px;
+}
+
+.stickyContainer {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100vh;
+  align-items: flex-start;
+  overflow-x: clip;
+  /* Yatay taşmayı kontrol eder ama scroll'u engelleme */
+  overflow-y: hidden;
+  padding-top: 64px;
+  padding-left: 24px;
+  box-sizing: border-box;
+}
+
+.galleryContent {
+  display: flex;
+  gap: 12px;
+  height: 100%;
+}
+
+.firstContainer {
+  display: flex;
+  height: 924px;
+  max-height: 924px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  flex-shrink: 0;
+  padding-left: 12px;
+}
+
+.childContainer {
+  display: flex;
+  width: 1271px;
+  align-items: stretch;
+  gap: 12px;
+  flex: 1 0 0;
+}
+
+.page1 {
+  display: flex;
+  width: 1416px;
+  height: 924px;
+  max-height: 924px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(235, 235, 235, 0.50);
+}
+
+.page1Image {
+  width: 760px;
+  height: 628px;
+  object-fit: contain;
+}
+
+.page {
+  display: flex;
+  width: 1416px;
+  height: 924px;
+  max-height: 924px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(235, 235, 235, 0.50);
+}
+
+.pageImage {
+  width: 760px;
+  height: 628px;
+  object-fit: contain;
+}
+
+.childContainer2 {
+  display: flex;
+  width: 1271px;
+  align-items: stretch;
+  gap: 12px;
+  flex: 1 0 0;
+}
+
+.innerChild {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 629.5px;
+  height: 100%;
+  max-height: 456px;
+  border-radius: 6px;
+  background: rgba(235, 235, 235, 0.50);
+  box-sizing: border-box;
+}
+
+.cardImage {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}

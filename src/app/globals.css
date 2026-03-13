@@ -1,0 +1,36 @@
+/* Global styles will be added as we build the new design. */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  max-width: 100vw;
+  overflow-x: clip;
+}
+
+/* Cal.com Modal Özelleştirmeleri */
+/* Modal backdrop */
+[data-cal-namespace="30min"] {
+  --cal-brand-color: #00194B !important;
+  --cal-brand-text-color: #ffffff !important;
+}
+
+/* Modal container */
+[data-cal-namespace="30min"] iframe {
+  border-radius: 12px !important;
+  box-shadow: 0 20px 60px rgba(0, 25, 75, 0.3) !important;
+}
+
+/* Modal backdrop overlay - Mavi arkaplan */
+[data-cal-namespace="30min"] + div {
+  backdrop-filter: blur(4px);
+  background-color: rgba(0, 25, 75, 0.85) !important; /* Mavi arkaplan */
+}

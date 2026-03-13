@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow-x: hidden; }
+
+body {
+  background: #0a0a0f;
+  color: #e2e2e8;
+  font-family: 'Inter', -apple-system, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* ─── Container ─── */
+.container {
+  width: 100%;
+  max-width: 960px;
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ─── Hero Figure ─── */
+.hero-figure {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 480px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  margin-bottom: 56px;
+}
+.hero-figure canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── Cards ─── */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 36px 32px;
+  cursor: default;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.35s;
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+.card:hover::before { opacity: 1; }
+
+.card.design::before {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.06), rgba(96, 165, 250, 0.04));
+}
+.card.development::before {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.06), rgba(96, 165, 250, 0.04));
+}
+
+.card .label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.card.design .label { color: #a78bfa; }
+.card.development .label { color: #34d399; }
+
+.card h2 {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.card p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 400;
+}
+
+/* ─── Signature ─── */
+.sig {
+  margin-top: 48px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.sig a {
+  color: rgba(255, 255, 255, 0.28);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.sig a:hover { color: #a78bfa; }
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  .cards { grid-template-columns: 1fr; gap: 16px; }
+  .card { padding: 28px 24px; }
+  .card h2 { font-size: 18px; }
+  .hero-figure { margin-bottom: 40px; aspect-ratio: 4 / 3; }
+}
