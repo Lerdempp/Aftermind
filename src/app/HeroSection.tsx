@@ -7,8 +7,6 @@ import IconExposure2 from "../../Icons/IconExposure2.svg";
 import IconProjects from "../../Icons/IconProjects.svg";
 import Image from "next/image";
 
-// Servisleri ve onlara ait 3D modelleri bir veri yapısında topluyoruz.
-// Bu sayede koda yeni bir servis eklemek çok daha kolay olacak.
 const SERVICES = [
   { id: "service1", label: "Design", model: "design" },
   { id: "service2", label: "Development", model: "development" },
@@ -18,10 +16,14 @@ const SERVICES = [
   { id: "service6", label: "Vibe Coding", model: "development" },
 ];
 
-export default function HeroSection() {
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [hoverOffset, setHoverOffset] = useState<number>(0);
-  
+interface HeroSectionProps {
+  heroRef: React.RefObject<HTMLDivElement>;
+}
+
+export default function HeroSection({ heroRef }: HeroSectionProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [hoverOffset, setHoverOffset] = useState(0);
+
   const pmRef = useRef<any>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
 
@@ -32,15 +34,18 @@ export default function HeroSection() {
 
     async function init() {
       try {
-        const coreModule = await import("./core/index") as any;
-        const { PointMorph, registerAllTransitions, registerAllAnimations } = coreModule;
+        const coreModule = (await import("./core/index")) as any;
+        const {
+          PointMorph,
+          registerAllTransitions,
+          registerAllAnimations,
+        } = coreModule;
 
         if (!mounted) return;
 
         registerAllTransitions();
         registerAllAnimations();
 
-        // Canvas oluştur
         const canvas = document.createElement("canvas");
         canvasContainerRef.current?.appendChild(canvas);
 
@@ -73,24 +78,19 @@ export default function HeroSection() {
         });
 
         pmRef.current = pm;
-        console.log("PointMorph initialized");
 
-        // Load manifest
         try {
           const resp = await fetch("/models/manifest.json");
           if (!resp.ok) throw new Error(`Manifest fetch failed: ${resp.status}`);
-          
-          const manifest = await resp.json();
-          console.log("Manifest loaded:", manifest);
 
-          // Modelleri yükle
+          const manifest = await resp.json();
+
           for (const entry of manifest) {
             if (!mounted) break;
             try {
-              const info = await pm.loadModel(`/models/${entry.file}`, entry.id);
-              console.log(`✓ Model loaded: ${entry.id}`, info);
+              await pm.loadModel(`/models/${entry.file}`, entry.id);
             } catch (e) {
-              console.error(`✗ Failed to load model ${entry.id}:`, e);
+              console.error(`Failed to load model ${entry.id}:`, e);
             }
           }
         } catch (e) {
@@ -111,8 +111,10 @@ export default function HeroSection() {
     };
   }, []);
 
-  const handleHover = (e: React.MouseEvent<HTMLSpanElement>, modelId: string) => {
-    // Referans kullanmak yerine doğrudan üzerine gelinen elementin pozisyonunu alıyoruz.
+  const handleHover = (
+    e: React.MouseEvent<HTMLSpanElement>,
+    modelId: string
+  ) => {
     setHoverOffset(e.currentTarget.offsetTop);
     setIsHovered(true);
 
@@ -122,8 +124,6 @@ export default function HeroSection() {
       } catch (err) {
         console.error("Morph error:", err);
       }
-    } else {
-      console.warn("PointMorph not ready");
     }
   };
 
@@ -140,7 +140,7 @@ export default function HeroSection() {
   };
 
   return (
-    <div className={styles.heroSection}>
+    <div ref={heroRef} className={styles.heroSection}>
       <div className={styles.heroChild1}>
         <span className={styles.title}>We are After Mind</span>
       </div>
@@ -155,6 +155,7 @@ export default function HeroSection() {
                 We have professional teammates
               </span>
             </div>
+
             <div className={styles.iconItem}>
               <Image
                 src={IconExposure2}
@@ -164,7 +165,9 @@ export default function HeroSection() {
               />
               <span className={styles.iconText}>4+ years experience,</span>
             </div>
+
             <span className={styles.iconText}>and already complete</span>
+
             <div className={styles.iconItem}>
               <Image src={IconProjects} alt="Projects" width={20} height={20} />
               <span className={styles.iconText}>20+ Project</span>
@@ -173,7 +176,6 @@ export default function HeroSection() {
         </div>
 
         <div className={styles.heroChild2_2} onMouseLeave={handleMouseLeave}>
-          {/* PointMorph Canvas */}
           <div
             ref={canvasContainerRef}
             className={`${styles.morphCanvas} ${
@@ -184,7 +186,6 @@ export default function HeroSection() {
 
           <span className={styles.andWeDoText}>And, we do</span>
 
-          {/* Servislerimizi harcoded spalar yerine map ile dinamik olarak render ediyoruz */}
           <div className={styles.servicesContainer}>
             {SERVICES.map((service) => (
               <span

@@ -1,15 +1,18 @@
 .navbar {
   position: fixed;
-  /* sticky yerine fixed kullanıldı */
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-shrink: 0;
-  border-radius: 6px;
+
   padding: 10px 24px;
   box-sizing: border-box;
-  background-color: white;
+  margin: 0;
+  background: red;
 }
 
 .logoIcon {
@@ -17,7 +20,7 @@
   width: 24px;
   height: 24px;
   flex-shrink: 0;
-  left: 255px;
+  cursor: pointer;
 }
 
 .logoBase,

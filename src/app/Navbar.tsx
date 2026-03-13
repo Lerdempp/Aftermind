@@ -1,81 +1,84 @@
 "use client";
 
 import { useScroll, useTransform, motion } from "motion/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getCalApi } from "@calcom/embed-react";
 import styles from "./Navbar.module.css";
 
 interface NavbarProps {
   galleryProgress: any;
+  heroRef: React.RefObject<HTMLDivElement>;
 }
 
-// Animasyon konfigürasyonu - Tüm değerler buradan ayarlanabilir
 const ANIMATION_CONFIG = {
-  navbar: {
-    startProgress: 0,  // Animasyonun başladığı scroll progress (0-1 arası)
-    endProgress: 1,    // Animasyonun bittiği scroll progress (0-1 arası)
-    startPosition: 212,   // Başlangıç pozisyonu (px)
-    endPosition: -226,    // Bitiş pozisyonu (px)
-  },
   logo: {
-    startProgress: 0,  // Logo scale başlangıcı
-    endProgress: 0.5,    // Logo scale bitişi
-    startScale: 1,        // Başlangıç boyutu
-    endScale: 1.33,       // Bitiş boyutu (1.33 = %33 büyüme)
+    startProgress: 0.8,  // 2 scroll gecikmeli
+    endProgress: 1,
+    startScale: 1,
+    endScale: 1.33,
+    endViewportPercent: 0.03,
   },
   button: {
-    startProgress: 0.7,   // Butonun görünmeye başladığı progress
-    endProgress: 1,     // Butonun tam görünür olduğu progress
-    slideDistance: 20,    // Sağdan kayma mesafesi (px)
+    startProgress: 0.90,  // 2 scroll gecikmeli
+    endProgress: 1,
+    slideDistance: 20,
   },
 };
 
-export default function Navbar({ galleryProgress }: NavbarProps) {
+const NAVBAR_PADDING_X = 24;
+
+export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
   const { scrollYProgress } = useScroll();
   const rotate = useTransform(scrollYProgress, [0, 1], [0, 720]);
 
-  // Cal.com embed initialization
+  const [logoStartX, setLogoStartX] = useState(0);
+  const [logoEndX, setLogoEndX] = useState(0);
+
   useEffect(() => {
     (async function () {
       const cal = await getCalApi({ namespace: "30min" });
       cal("ui", {
         hideEventTypeDetails: false,
         layout: "month_view",
-        theme: "dark", // Dark theme kullanarak koyu görünüm
+        theme: "dark",
       });
     })();
   }, []);
 
-  const handleScheduleClick = async () => {
-    const cal = await getCalApi({ namespace: "30min" });
-    cal("modal", {
-      calLink: "aftermind/30min",
-      config: {
-        layout: "month_view",
-        theme: "dark", // Dark theme
-      },
-    });
-  };
+  useEffect(() => {
+    const updateLogoPositions = () => {
+      const heroLeft =
+        heroRef.current?.getBoundingClientRect().left ?? NAVBAR_PADDING_X;
 
-  // Navbar pozisyon animasyonu
-  const navbarLeft = useTransform(
-    galleryProgress,
-    [0, ANIMATION_CONFIG.navbar.startProgress, ANIMATION_CONFIG.navbar.endProgress],
-    [
-      ANIMATION_CONFIG.navbar.startPosition,
-      ANIMATION_CONFIG.navbar.startPosition,
-      ANIMATION_CONFIG.navbar.endPosition,
-    ]
-  );
+      const startX = heroLeft - NAVBAR_PADDING_X;
+      const endLeft =
+        window.innerWidth * ANIMATION_CONFIG.logo.endViewportPercent;
+      const endX = endLeft - NAVBAR_PADDING_X;
 
-  // Logo scale animasyonu
+      setLogoStartX(startX);
+      setLogoEndX(endX);
+    };
+
+    updateLogoPositions();
+    window.addEventListener("resize", updateLogoPositions);
+
+    return () => {
+      window.removeEventListener("resize", updateLogoPositions);
+    };
+  }, [heroRef]);
+
   const logoScale = useTransform(
     galleryProgress,
     [ANIMATION_CONFIG.logo.startProgress, ANIMATION_CONFIG.logo.endProgress],
     [ANIMATION_CONFIG.logo.startScale, ANIMATION_CONFIG.logo.endScale]
   );
 
-  // Button animasyonları
+  const logoX = useTransform(
+    galleryProgress,
+    [ANIMATION_CONFIG.logo.startProgress, ANIMATION_CONFIG.logo.endProgress],
+    [logoStartX, logoEndX]
+  );
+
   const buttonOpacity = useTransform(
     galleryProgress,
     [ANIMATION_CONFIG.button.startProgress, ANIMATION_CONFIG.button.endProgress],
@@ -92,25 +95,32 @@ export default function Navbar({ galleryProgress }: NavbarProps) {
     v > 0.02 ? "auto" : "none"
   );
 
+  const handleScheduleClick = async () => {
+    const cal = await getCalApi({ namespace: "30min" });
+    cal("modal", {
+      calLink: "aftermind/30min",
+      config: {
+        layout: "month_view",
+        theme: "dark",
+      },
+    });
+  };
+
   const handleLogoClick = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <motion.div
-      className={styles.navbar}
-      style={{
-        left: navbarLeft,
-        right: 24,
-      }}
-    >
+    <motion.div className={styles.navbar} suppressHydrationWarning>
       <motion.div
         className={styles.logoIcon}
         onClick={handleLogoClick}
         style={{
           cursor: "pointer",
           scale: logoScale,
+          x: logoX,
         }}
+        suppressHydrationWarning
       >
         <svg viewBox="0 0 24 24" className={styles.logoBase}>
           <circle cx="12" cy="12" r="12" fill="#00194B" />
@@ -142,6 +152,7 @@ export default function Navbar({ galleryProgress }: NavbarProps) {
           x: buttonX,
           pointerEvents: buttonPointerEvents as any,
         }}
+        suppressHydrationWarning
       >
         Schedule Call
       </motion.button>

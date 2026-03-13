@@ -12,10 +12,11 @@ import Lenis from "lenis";
 
 export default function HomePage() {
   const galleryRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress: galleryProgress } = useScroll({
     target: galleryRef,
-    offset: ["start 500px", "start 50px"],  // Gallery viewport'a 100px girmişken başlar, 200px girmişken biter
+    offset: ["start 500px", "start 0px"],
   });
 
   useEffect(() => {
@@ -39,18 +40,16 @@ export default function HomePage() {
 
   return (
     <div className={styles.mainWrapper}>
-      <Navbar galleryProgress={galleryProgress} />
+      <Navbar galleryProgress={galleryProgress} heroRef={heroRef} />
 
-      {/* Üst Kısım: Scale edilen bölüm */}
       <div className={styles.page}>
         <div className={styles.container}>
-          <HeroSection />
+          <HeroSection heroRef={heroRef} />
           <LedStrip />
           <PricingSection />
         </div>
       </div>
 
-      {/* Galeri Kısmı: Scale edilmeyen, bağımsız bölüm */}
       <div ref={galleryRef} className={styles.galleryWrapper}>
         <Gallery />
       </div>
