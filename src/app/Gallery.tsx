@@ -1,25 +1,77 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { motion, useMotionValue, useSpring } from "motion/react";
 import styles from "./Gallery.module.css";
 import Card1 from "../../Images/Card1.svg";
 import Card2 from "../../Images/Card2.svg";
+
+const PAUSE_THRESHOLD = 140;
+const EDGE_TOLERANCE = 2;
+const LERP = 0.14;
+const MIN_DELTA = 1.5;
 
 export default function Gallery() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  const [maxHorizontalScroll, setMaxHorizontalScroll] = useState(0);
-  const [viewportHeight, setViewportHeight] = useState(0);
+  const [sectionHeight, setSectionHeight] = useState(1000);
 
-  const rawX = useMotionValue(0);
+  const maxHorizontalScrollRef = useRef(0);
+  const viewportHeightRef = useRef(0);
 
-  const x = useSpring(rawX, {
-    stiffness: 140,
-    damping: 26,
-    mass: 0.4,
-  });
+  const currentXRef = useRef(0);
+  const targetXRef = useRef(0);
+  const rafRef = useRef<number | null>(null);
+
+  // boundary accumulators
+  const enterPauseAccRef = useRef(0); // dikey -> yatay giriş
+  const endPauseAccRef = useRef(0); // sondan geri dönüş
+  const exitPauseAccRef = useRef(0); // baştan dikeye çıkış
+
+  // boundary state flags
+  const enteredForwardRef = useRef(false);
+  const leftEndRef = useRef(false);
+
+  const applyTransform = (x: number) => {
+    if (!trackRef.current) return;
+    trackRef.current.style.transform = `translate3d(${x}px, 0, 0)`;
+  };
+
+  const clamp = (value: number, min: number, max: number) => {
+    return Math.max(min, Math.min(max, value));
+  };
+
+  const resetPauseState = () => {
+    enterPauseAccRef.current = 0;
+    endPauseAccRef.current = 0;
+    exitPauseAccRef.current = 0;
+    enteredForwardRef.current = false;
+    leftEndRef.current = false;
+  };
+
+  const animate = () => {
+    const current = currentXRef.current;
+    const target = targetXRef.current;
+    const diff = target - current;
+
+    if (Math.abs(diff) < 0.1) {
+      currentXRef.current = target;
+      applyTransform(target);
+      rafRef.current = null;
+      return;
+    }
+
+    const next = current + diff * LERP;
+    currentXRef.current = next;
+    applyTransform(next);
+
+    rafRef.current = window.requestAnimationFrame(animate);
+  };
+
+  const startAnimation = () => {
+    if (rafRef.current !== null) return;
+    rafRef.current = window.requestAnimationFrame(animate);
+  };
 
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
@@ -29,14 +81,24 @@ export default function Gallery() {
 
       const totalWidth = trackRef.current.scrollWidth;
       const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
       const horizontalDistance = Math.max(totalWidth - viewportWidth, 0);
 
-      setMaxHorizontalScroll(horizontalDistance);
-      setViewportHeight(window.innerHeight);
+      maxHorizontalScrollRef.current = horizontalDistance;
+      viewportHeightRef.current = viewportHeight;
 
-      const currentX = rawX.get();
-      const clampedX = Math.max(-horizontalDistance, Math.min(0, currentX));
-      rawX.set(clampedX);
+      currentXRef.current = clamp(
+        currentXRef.current,
+        -horizontalDistance,
+        0
+      );
+      targetXRef.current = clamp(targetXRef.current, -horizontalDistance, 0);
+
+      applyTransform(currentXRef.current);
+
+      setSectionHeight(
+        horizontalDistance > 0 ? horizontalDistance + viewportHeight : viewportHeight
+      );
     };
 
     updateMetrics();
@@ -45,7 +107,7 @@ export default function Gallery() {
     return () => {
       window.removeEventListener("resize", updateMetrics);
     };
-  }, [rawX]);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -59,61 +121,140 @@ export default function Gallery() {
     };
 
     const handleWheel = (e: WheelEvent) => {
+      const maxHorizontalScroll = maxHorizontalScrollRef.current;
+
       if (maxHorizontalScroll <= 0) return;
-      if (!isGalleryActive()) return;
 
-      const currentX = rawX.get();
-      const delta = e.deltaY;
+      if (!isGalleryActive()) {
+        resetPauseState();
+        return;
+      }
 
-      const atStart = currentX >= 0;
-      const atEnd = currentX <= -maxHorizontalScroll;
+      const delta = normalizeWheelDelta(e);
 
+      if (Math.abs(delta) < MIN_DELTA) return;
+
+      const currentX = targetXRef.current;
       const scrollingDown = delta > 0;
       const scrollingUp = delta < 0;
 
-      // Aşağı inerken yatayda sona gelmediysek scroll'u kilitle ve yataya çevir
-      if (scrollingDown && !atEnd) {
+      const atStart = currentX >= -EDGE_TOLERANCE;
+      const atEnd = currentX <= -maxHorizontalScroll + EDGE_TOLERANCE;
+
+      if (scrollingDown) {
         e.preventDefault();
 
-        const nextX = currentX - delta;
-        const clampedX = Math.max(-maxHorizontalScroll, Math.min(0, nextX));
-        rawX.set(clampedX);
+        // Sondaysa aşağı devam yok
+        if (atEnd) {
+          targetXRef.current = -maxHorizontalScroll;
+          endPauseAccRef.current = 0;
+          exitPauseAccRef.current = 0;
+          leftEndRef.current = false;
+          startAnimation();
+          return;
+        }
+
+        // Başlangıçta önce bir dur
+        if (atStart && !enteredForwardRef.current) {
+          enterPauseAccRef.current += Math.abs(delta);
+
+          targetXRef.current = 0;
+          startAnimation();
+
+          if (enterPauseAccRef.current < PAUSE_THRESHOLD) {
+            return;
+          }
+
+          enteredForwardRef.current = true;
+          enterPauseAccRef.current = 0;
+        }
+
+        // İleri giderken diğer state'leri temizle
+        endPauseAccRef.current = 0;
+        exitPauseAccRef.current = 0;
+        leftEndRef.current = false;
+
+        targetXRef.current = clamp(
+          currentX - delta,
+          -maxHorizontalScroll,
+          0
+        );
+
+        if (targetXRef.current < -EDGE_TOLERANCE) {
+          enteredForwardRef.current = true;
+        }
+
+        if (targetXRef.current <= -maxHorizontalScroll + EDGE_TOLERANCE) {
+          leftEndRef.current = false;
+          endPauseAccRef.current = 0;
+        }
+
+        startAnimation();
         return;
       }
 
-      // Yukarı çıkarken yatayda başa gelmediysek scroll'u kilitle ve geri yataya çevir
-      if (scrollingUp && !atStart) {
-        e.preventDefault();
+      if (scrollingUp) {
+        // Sondan geri dönerken önce bir dur
+        if (atEnd && !leftEndRef.current) {
+          e.preventDefault();
 
-        const nextX = currentX - delta;
-        const clampedX = Math.max(-maxHorizontalScroll, Math.min(0, nextX));
-        rawX.set(clampedX);
-        return;
+          endPauseAccRef.current += Math.abs(delta);
+          targetXRef.current = -maxHorizontalScroll;
+          startAnimation();
+
+          if (endPauseAccRef.current < PAUSE_THRESHOLD) {
+            return;
+          }
+
+          leftEndRef.current = true;
+          endPauseAccRef.current = 0;
+          return;
+        }
+
+        // Hala yatay alan içindeysek önce yatay geri gel
+        if (!atStart) {
+          e.preventDefault();
+
+          targetXRef.current = clamp(
+            currentX - delta,
+            -maxHorizontalScroll,
+            0
+          );
+
+          enteredForwardRef.current = false;
+          exitPauseAccRef.current = 0;
+
+          startAnimation();
+          return;
+        }
+
+        // Başa geldiğinde önce bir dur, sonra dikey yukarı çıkış
+        if (atStart) {
+          exitPauseAccRef.current += Math.abs(delta);
+          targetXRef.current = 0;
+          startAnimation();
+
+          if (exitPauseAccRef.current < PAUSE_THRESHOLD) {
+            e.preventDefault();
+            return;
+          }
+
+          resetPauseState();
+          return;
+        }
       }
-
-      // scrollingDown && atEnd ise aşağı devam etmesine izin verme:
-      // çünkü burası sayfanın sonu gibi davranacak
-      if (scrollingDown && atEnd) {
-        e.preventDefault();
-        return;
-      }
-
-      // scrollingUp && atStart ise normal yukarı çıkışa izin ver
     };
 
     window.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
-    };
-  }, [maxHorizontalScroll, rawX]);
 
-  // Sayfanın son section'ı gibi davranması için:
-  // sticky alan (1 viewport) + yatay gidilecek mesafe kadar yükseklik yeterli
-  const sectionHeight =
-    maxHorizontalScroll > 0
-      ? maxHorizontalScroll + viewportHeight
-      : viewportHeight;
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, []);
 
   return (
     <section
@@ -122,11 +263,7 @@ export default function Gallery() {
       style={{ height: `${sectionHeight}px` }}
     >
       <div className={styles.stickyContainer}>
-        <motion.div
-          ref={trackRef}
-          style={{ x }}
-          className={styles.galleryContent}
-        >
+        <div ref={trackRef} className={styles.galleryContent}>
           <div className={styles.firstContainer}>
             <div className={styles.childContainer}>
               <div className={styles.innerChild}>
@@ -154,8 +291,14 @@ export default function Gallery() {
           <div className={styles.page}>
             <img src={Card2.src} alt="C2" className={styles.pageImage} />
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
+}
+
+function normalizeWheelDelta(e: WheelEvent) {
+  if (e.deltaMode === 1) return e.deltaY * 16;
+  if (e.deltaMode === 2) return e.deltaY * window.innerHeight;
+  return e.deltaY;
 }
