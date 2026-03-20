@@ -23,7 +23,7 @@ interface HeroSectionProps {
 export default function HeroSection({ heroRef }: HeroSectionProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [hoverOffset, setHoverOffset] = useState(0);
-  const [activeServiceIndex, setActiveServiceIndex] = useState(-1);
+  const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const [isUserInteracting, setIsUserInteracting] = useState(false);
   const serviceRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
@@ -95,6 +95,10 @@ export default function HeroSection({ heroRef }: HeroSectionProps) {
             } catch (e) {
               console.error(`Failed to load model ${entry.id}:`, e);
             }
+          }
+          
+          if (mounted && pmRef.current) {
+            pmRef.current.morphToModel("design");
           }
         } catch (e) {
           console.error("Manifest load error:", e);

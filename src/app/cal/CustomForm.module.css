@@ -1,0 +1,136 @@
+.formContainer {
+  background-color: #F7F7F8;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 480px;
+  margin: 0 auto;
+  font-family: inherit;
+  color: #0d0d0d;
+}
+
+.field {
+  margin-bottom: 24px;
+}
+
+.label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #111;
+}
+
+.input, .select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 24px;
+  border: 1px solid #E5E7EB;
+  background-color: #FFFFFF;
+  font-size: 15px;
+  color: #111;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input:focus, .select:focus {
+  border-color: #00194B;
+  box-shadow: 0 0 0 2px rgba(0, 25, 75, 0.1);
+}
+
+.input::placeholder {
+  color: #9CA3AF;
+}
+
+.selectWrapper {
+  position: relative;
+}
+
+.selectWrapper::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.select {
+  appearance: none;
+  cursor: pointer;
+  color: #9CA3AF;
+}
+
+.select:not(:invalid) {
+  color: #111;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #6B7280;
+}
+
+.infoIcon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #9CA3AF;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.boldPrice {
+  color: #111;
+  font-weight: 600;
+}
+
+.buttonsRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+.cancelButton {
+  padding: 12px 24px;
+  border-radius: 24px;
+  border: none;
+  background-color: #F3F4F6;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelButton:hover {
+  background-color: #E5E7EB;
+}
+
+.applyButton {
+  padding: 12px 28px;
+  border-radius: 24px;
+  border: none;
+  background-color: #0B1633;
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.applyButton:hover {
+  background-color: #081026;
+}

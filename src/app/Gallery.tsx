@@ -16,9 +16,12 @@ export default function Gallery() {
     const measure = () => {
       if (!trackRef.current) return;
       const trackWidth = trackRef.current.scrollWidth;
-      const vw = window.innerWidth;
+      const vw = document.documentElement.clientWidth;
       const vh = window.innerHeight;
-      setTotalDistance(Math.max(trackWidth - vw, 0));
+      // trackWidth naturally calculates inner width.
+      // Since sticky container has padding-left: 12px, its start is 12px offset.
+      // To also leave a 12px gap at the end (total 24 offset adjustments), we add 24.
+      setTotalDistance(Math.max(trackWidth - vw + 24, 0));
       setViewportHeight(vh);
     };
 

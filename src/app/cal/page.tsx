@@ -12,6 +12,12 @@ export default function CalPage() {
   useEffect(() => {
     (async function () {
       const cal = await getCalApi({ namespace: "30min" });
+      cal("on", {
+        action: "*",
+        callback: (e) => {
+          console.log("CAL ACTION:", e.detail);
+        }
+      });
       cal("ui", {
         theme: "light",
         styles: { branding: { brandColor: "#00194B" } },
@@ -28,9 +34,9 @@ export default function CalPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      <div className={styles.headerWrapper}>
+      <div className={styles.innerContainer}>
         <button 
-          onClick={() => router.push("/")}
+          onClick={() => router.back()}
           className={styles.backButton}
           aria-label="Back"
         >
@@ -38,17 +44,15 @@ export default function CalPage() {
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
         </button>
-        <h1 className={styles.titleAccent}>Book a 30 min call.</h1>
-        <h1 className={styles.titleBlack}>And we'll reach out.</h1>
-      </div>
 
-      <div className={styles.calendarContainer}>
-        <Cal
-          namespace="30min"
-          calLink="aftermind/30min"
-          style={{ width: "100%", height: "700px" }}
-          config={{ layout: "month_view", theme: "light" }}
-        />
+        <div className={styles.calendarContainer}>
+          <Cal
+            namespace="30min"
+            calLink="aftermind/30min"
+            style={{ width: "100%" }}
+            config={{ layout: "month_view", theme: "light" }}
+          />
+        </div>
       </div>
     </motion.div>
   );
