@@ -212,7 +212,9 @@
     order: 3;
     align-self: flex-start;
     margin-top: -24px;
-    margin-left: -24px; /* Canvas iç boşluğunu ezerek çizimi tam sıfıra dayamak için eklendi */
+    margin-left: -24px;
+    margin-bottom: -21px;
+    /* 31px toplam boşluk için (7px + 24px container gap) */
   }
 
   .andWeDoText {

@@ -62,7 +62,7 @@ export default function HeroSection({ heroRef }: HeroSectionProps) {
         canvasContainerRef.current?.appendChild(canvas);
 
         const pm = new PointMorph(canvasContainerRef.current, {
-          pointCount: 3500,
+          pointCount: window.innerWidth <= 768 ? 1500 : 3500,
           radius: 3.5,
           spread: 0,
           pointSize: 0.1,
