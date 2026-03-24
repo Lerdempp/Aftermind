@@ -52,3 +52,14 @@
 .scheduleButton:hover {
   background: #002366;
 }
+
+@media (max-width: 768px) {
+  .navbar {
+    display: flex;
+    height: auto;
+    padding: 8px 24px 8px 0px;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+  }
+}

@@ -112,6 +112,7 @@
   text-decoration: none;
   position: relative;
   cursor: pointer;
+  z-index: 15;
 }
 
 .serviceText::after {
@@ -172,11 +173,11 @@
   width: 150px;
   height: 150px;
   position: absolute;
-  left: -178px;
+  left: clamp(-178px, calc(-92px - 6vw), -138px);
   top: -97px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.3s ease;
+  transition: opacity 0.4s ease, transform 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
   border-radius: 12px;
   overflow: visible;
   z-index: 10;
@@ -191,4 +192,36 @@
 
 .morphCanvasVisible {
   opacity: 1 !important;
+}
+
+@media (max-width: 768px) {
+  .heroChild2_2 {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .morphCanvas {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none !important;
+    width: 120px;
+    height: 120px;
+    z-index: 5;
+    order: 3;
+    align-self: flex-start;
+    margin-top: -24px;
+    margin-left: -24px; /* Canvas iç boşluğunu ezerek çizimi tam sıfıra dayamak için eklendi */
+  }
+
+  .andWeDoText {
+    order: 1;
+    margin-bottom: 4px;
+  }
+
+  .servicesContainer {
+    order: 2;
+    gap: 8px;
+  }
 }

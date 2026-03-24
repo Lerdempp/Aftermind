@@ -42,3 +42,15 @@
   width: 100%;
   position: relative;
 }
+
+@media (max-width: 768px) {
+  .container {
+    margin-top: 80px;
+    margin-left: 24px;
+    margin-right: 24px;
+    width: calc(100% - 48px);
+  }
+  .galleryWrapper {
+    margin-top: 0;
+  }
+}

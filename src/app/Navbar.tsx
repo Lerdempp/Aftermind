@@ -35,6 +35,7 @@ export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
 
   const [logoStartX, setLogoStartX] = useState(0);
   const [logoEndX, setLogoEndX] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     (async function () {
@@ -49,13 +50,16 @@ export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
 
   useEffect(() => {
     const updateLogoPositions = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+
       const heroLeft =
         heroRef.current?.getBoundingClientRect().left ?? NAVBAR_PADDING_X;
 
       const startX = heroLeft - NAVBAR_PADDING_X + 24;
       const endLeft =
         window.innerWidth * ANIMATION_CONFIG.logo.endViewportPercent;
-      const endX = endLeft - NAVBAR_PADDING_X;
+      const endX = mobile ? startX : endLeft - NAVBAR_PADDING_X;
 
       setLogoStartX(startX);
       setLogoEndX(endX);
@@ -72,7 +76,7 @@ export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
   const logoScale = useTransform(
     galleryProgress,
     [ANIMATION_CONFIG.logo.startProgress, ANIMATION_CONFIG.logo.endProgress],
-    [ANIMATION_CONFIG.logo.startScale, ANIMATION_CONFIG.logo.endScale]
+    isMobile ? [1, 1] : [ANIMATION_CONFIG.logo.startScale, ANIMATION_CONFIG.logo.endScale]
   );
 
   const logoX = useTransform(
@@ -120,7 +124,7 @@ export default function Navbar({ galleryProgress, heroRef }: NavbarProps) {
   return (
     <motion.div
       className={styles.navbar}
-      style={{ backgroundColor }}
+      style={{ backgroundColor: isMobile ? "white" : backgroundColor }}
       suppressHydrationWarning
     >
       <motion.div

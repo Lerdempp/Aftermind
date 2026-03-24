@@ -23,9 +23,18 @@ interface HeroSectionProps {
 export default function HeroSection({ heroRef }: HeroSectionProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [hoverOffset, setHoverOffset] = useState(0);
+  const [hoverLeftOffset, setHoverLeftOffset] = useState(0);
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const [isUserInteracting, setIsUserInteracting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const serviceRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
+  useLayoutEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const pmRef = useRef<any>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -131,25 +140,27 @@ export default function HeroSection({ heroRef }: HeroSectionProps) {
 
   // Handle active service change (either auto or manual)
   useEffect(() => {
-    // If user is manually hovering, handleHover handles the morph.
     // Index -1 means idle (initial state)
-    if (isUserInteracting || activeServiceIndex < 0) return;
+    if (activeServiceIndex < 0) return;
 
     const service = SERVICES[activeServiceIndex];
-    const el = serviceRefs.current[activeServiceIndex];
+    const designEl = serviceRefs.current[0];
 
-    if (el && pmRef.current) {
-      setHoverOffset(el.offsetTop);
+    // Always use Design position but morph to the current model
+    if (designEl && pmRef.current) {
+      setHoverOffset(designEl.offsetTop);
+      setHoverLeftOffset(designEl.offsetLeft + designEl.offsetWidth / 2);
       setIsHovered(true);
       pmRef.current.morphToModel(service.model);
     }
-  }, [activeServiceIndex, isUserInteracting]);
+  }, [activeServiceIndex]);
 
   // Initial fix: Ensure the icon container is visible at the correct height on mount
   useLayoutEffect(() => {
     const el = serviceRefs.current[0];
     if (el) {
       setHoverOffset(el.offsetTop);
+      setHoverLeftOffset(el.offsetLeft + el.offsetWidth / 2);
       setIsHovered(true); // Shows the default sphere immediately
     }
   }, []);
@@ -161,8 +172,9 @@ export default function HeroSection({ heroRef }: HeroSectionProps) {
   ) => {
     setIsUserInteracting(true);
     setActiveServiceIndex(index);
-    setHoverOffset(e.currentTarget.offsetTop);
     setIsHovered(true);
+    
+    // We do NOT update hoverOffset/hoverLeftOffset here anymore to keep it fixed at Design position
 
     if (pmRef.current) {
       try {
@@ -175,15 +187,6 @@ export default function HeroSection({ heroRef }: HeroSectionProps) {
 
   const handleMouseLeave = () => {
     setIsUserInteracting(false);
-    setIsHovered(false);
-
-    if (pmRef.current) {
-      try {
-        pmRef.current.morphToDefault();
-      } catch (e) {
-        console.error("Morph to default error:", e);
-      }
-    }
   };
 
   return (
@@ -227,7 +230,10 @@ export default function HeroSection({ heroRef }: HeroSectionProps) {
             ref={canvasContainerRef}
             className={`${styles.morphCanvas} ${isHovered ? styles.morphCanvasVisible : ""
               }`}
-            style={{ transform: `translateY(${hoverOffset}px)` }}
+            style={{ 
+              transform: `translateY(${hoverOffset}px)`,
+              "--hover-left": `${hoverLeftOffset}px`
+            } as React.CSSProperties}
           />
 
           <span className={styles.andWeDoText}>And, we do</span>
@@ -239,11 +245,12 @@ export default function HeroSection({ heroRef }: HeroSectionProps) {
                 ref={(el) => {
                   serviceRefs.current[index] = el;
                 }}
-                className={`${styles.serviceText} ${activeServiceIndex === index && !isUserInteracting
+                className={`${styles.serviceText} ${activeServiceIndex === index && (!isUserInteracting || isMobile)
                   ? styles.serviceTextActive
                   : ""
                   }`}
                 onMouseEnter={(e) => handleHover(e, service.model, index)}
+                onClick={(e) => isMobile && handleHover(e as any, service.model, index)}
               >
                 {service.label}
               </span>
