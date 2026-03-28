@@ -2,6 +2,11 @@ import type { ReactNode } from "react";
 import localFont from "next/font/local";
 import "./globals.css";
 
+export const metadata = {
+  title: "After Mind",
+  description: "Discover the artistic and geometrical expressions of After Mind.",
+};
+
 const interVariable = localFont({
   src: [
     {
